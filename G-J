@@ -1,0 +1,171 @@
+import numpy as np
+from fractions import Fraction
+# vercnenq A-i ev B-i chapery katarenq hstack
+def gauss_jordan(A, B):
+    A_row = A.shape[0]
+    B_row = B.shape[0]
+    # ete A toxery B toxeri qanakin havasar chen lucum chuni
+    if A_row != B_row:
+        print(f"No solution!!")
+        return
+    A_col = A.shape[1]
+    Mat = np.hstack((A, B))
+
+    no_solution = False
+    # katarenq toxeri texapoxutyun
+    for i in range(A_col):
+        if Mat[i][i] == 0:
+            for j in range(i + 1, A_row):
+                if Mat[j][i] != 0:
+                    Mat[[i, j]] = Mat[[j, i]]
+                    print(f"R{j}<->R{i}")
+                    print(Mat)
+            else:
+                # stugenq lucum chunenalu depqy
+                if np.all(Mat[i, :-1] == 0) and Mat[i, -1] != 0:
+                    print("No solution!")
+                    no_solution = True
+                    break
+    # ete lucum uni glxavor ankyunagcic nerqev zroyacnenq
+    if not no_solution:
+        for i in range(A_col):
+            for j in range(i + 1, A_row):
+                if Mat[i][i] == 0:
+                    for i in range(A_col):
+                        if Mat[i][i] == 0:
+                            for j in range(i + 1, A_row):
+                                if Mat[j][i] != 0:
+                                    Mat[[i, j]] = Mat[[j, i]]
+                                    print(f"R{j}<->R{i}")
+                                    print(Mat)
+                elif Mat[j][i] == 0:
+                    continue
+                else:
+                    r = Mat[j][i] / Mat[i][i]
+                    Mat[j] = Mat[j] - r * Mat[i]
+                    # stugenq lucum chunenalu depqy
+                    if np.all(Mat[j, :-1] == 0) and Mat[j, -1] != 0:
+                        print("No solution!")
+                        no_solution = True
+                        break
+                    else:
+                        print(f"R{j} - ({Fraction(r).limit_denominator()})*R{i} ")
+                        print(Mat)
+            if no_solution:
+                break
+    # n * m chapi matrici depqum 0 yakan toxy heracnel
+    if not no_solution:
+        if A_col < A_row:
+            for i in range(A_row-1,-1,-1):
+                nonzero_rows = np.any(Mat != 0, axis=1)
+                Mat = Mat[nonzero_rows]
+                Mat_row = Mat.shape[0]
+                A_row = Mat_row
+
+
+
+    # ete lucum uni glxavoric verev zroyacnenq
+    if not no_solution:
+
+        for i in range(A_col - 1, -1, -1):
+            if Mat[i][i] == 0:
+                continue
+            else:
+                print(f"R{i} / ({Fraction(Mat[i][i]).limit_denominator()})")
+                Mat[i] = Mat[i] / Mat[i][i]
+                print(Mat)
+            for j in range(i - 1, -1, -1):
+                if Mat[j][i] == 0:
+                    continue
+                else:
+                    r1 = Mat[j][i]
+                    Mat[j] = Mat[j] - r1 * Mat[i]
+                    # stugenq lucum chunenalu paymany
+                    if np.all(Mat[j, :-1] == 0) and Mat[j, -1] != 0:
+                        print("No solution!")
+                        no_solution = True
+                        break
+                    else:
+                        print(f"R{j} - ({Fraction(r1).limit_denominator()})*R{i}")
+                        print(Mat)
+            if no_solution:
+                break
+    #stugenq anverj lucumner en the mek depq
+    if not no_solution:
+        for i in range(A_row):
+            if np.all(Mat[i, :-1] == 0) and Mat[i, -1] == 0:
+                #anverj lucumneri depqery
+                for i in  range(A_col-1,-1,-1):
+                    Mat = np.array(Mat,dtype = 'object')
+                    if Mat[i][i] == 0:
+
+                        Mat[i][i]= 'a' + str(i)
+                        for j in  range(i,-1,-1):
+                            if j == i:
+                                continue
+                            else:
+
+                                if Mat[j][i] == 0:
+                                    continue
+                                elif Mat[j][i] == 1 or Mat[j][i] == -1:
+                                    Mat[j][i] = Mat[i][i]
+                                else:
+                                    Mat[j][i] = str(Fraction(Mat[j][i]).limit_denominator())
+                                    Mat[j][i] = Mat[j][i] + str(Mat[i][i])
+
+
+                for k in range(A_row):
+                    Mat[k][k] = f'a{k}'
+
+
+
+                for p in range(A_row-1,-1,-1):
+                    if Mat[p][p] == 0.0:
+                        continue
+                    else:
+                        x= f'{Mat[p][p]}={Fraction(Mat[p, -1]).limit_denominator()}'
+
+                        for l in range(p+1,A_col):
+                            if Mat[p][l] != 0.0:
+                                x+=f'-({Mat[p][l]})'
+                            else:
+                                continue
+                        if  list(x)[-1] == '0':
+                            x = list(x)
+                            x[-1] = f'a{p}'
+                            x =''.join(x)
+                        print(x)
+                print(f'a ∈ R ')
+
+                break
+        else:
+            # mek depqi hamar
+            solution = Mat[:, -1]
+            print("Unique Solution:")
+            print(solution)
+
+n = int(input("ENTER COUNT ROW OF A MATRIX:"))
+m = int(input("ENTER COUNT COLUM OF A MATRIX:"))
+A = []
+
+print("ENTER A NUMBER:")
+for i in range(n):
+    A1 = list(map(int,input().split()))
+    if len(A1) < m:
+        print('sxal nermucum')
+    else:
+        A.append(A1)
+A = np.array(A,dtype = 'float')
+print("ENTER B NUMBER:")
+B = list(map(int,input().split()))
+B = [[i] for i in B]
+B = np.array(B,dtype = 'float')
+
+A_row = A.shape[0]
+B_row = B.shape[0]
+A_col = A.shape[1]
+if A_col > B_row:
+    print('konkret lucum chuni')
+else:
+
+    gauss_jordan(A, B)
